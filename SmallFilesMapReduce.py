@@ -2,6 +2,8 @@ import lithops
 import pandas as pd
 import sqlite3
 import io
+from Partitioner import Partitioner
+# TODO: Integrate Partitioner: change map processes to receive partition of key\block pairs instead of single key
 
 LOG_LEVEL = 'DEBUG'
 ENCODING = 'UTF-8'
@@ -10,14 +12,13 @@ DATABASE = 'mydata.db'
 TEMP_RESULTS_TABLE = "temp_results"
 STORAGE = 'azure_storage'
 
-class SFMapReduceEngine():
+class SFMapReduceEngine:
     @staticmethod
     def get_keys_from_container(input_data, prefix = None):
-        """retruns a list of the keys in the input data container/prefix"""
+        """Returns a list of the keys in the input data container/prefix"""
         st = lithops.Storage(backend=STORAGE)
         return st.list_keys(input_data, prefix = prefix)
-        
-    
+
     @staticmethod
     def map_keys_functions(container, keys, map_function):
         """Runs a thread map key function for each key in input data, returns array of threads"""
