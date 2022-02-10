@@ -1,20 +1,27 @@
-from SmallFilesMapReduce import *
+from MapReduceEngine import *
+from io import BytesIO
+import pandas as pd
 
 
-def inverted_map(document_name, df):
-    result = []
-    for column in df.columns:
-        df[column] = column + "_" + df[column]
-    for index, row in df.iterrows():
-        [result.append((key, document_name)) for key in row]
-    return result
+def inverted_map(document_name, column_index):
+    storage = Storage()  # load configuration from file
+    bytes_data = storage.get_object('my_bucket', document_name)
+    df = pd.read_csv(BytesIO(bytes_data))
+    selected_column = df.iloc[:, column_index]
+    return [(value, document_name) for value in selected_column]
 
 
 def inverted_reduce(value, documents):
-    return [value, ",".join(list(set(documents.split(","))))]
+    temp_list = documents.split(", ")
+    temp_list = list(dict.fromkeys(temp_list))  # remove duplicates from list
+    documents = ', '.join(temp_list)
+    return value, documents
 
 
 input_data = 'my_bucket/Data'
-mapreduce = SFMapReduceEngine()
-results = mapreduce.execute(input_data, inverted_map, inverted_reduce)
-print(results)
+mapreduce = MapReduceEngine()
+results = mapreduce.execute(input_data, inverted_map, inverted_reduce, params={'column': 1})
+print('Inverted index result:')
+if results is not None:
+    for res in results:
+        print(res, end='\n')
