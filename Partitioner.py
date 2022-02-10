@@ -6,7 +6,7 @@ class NewCloudObject(CloudObject):
     def __init__(self, backend, bucket, key):
         super().__init__(backend, bucket, key)
         st = Storage(backend)
-        cloud_object = st.get_cloud_object(bucket, key)
+        cloud_object = st.get_cloudobject(bucket, key)
         self.size = cloud_object['content-length']  # TODO: copy here the line I wrote myself to get object size
         self.stream = st.get_object(self.bucket, self.key, stream=True)
 
