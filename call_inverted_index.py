@@ -1,13 +1,13 @@
 from MapReduceEngine import *
-from io import BytesIO
 import pandas as pd
 
 
-def inverted_map(document_name, column_index):
+def inverted_map(cloud_object, column_index):
     storage = Storage()  # load configuration from file
-    bytes_data = storage.get_object('my_bucket', document_name)
-    df = pd.read_csv(BytesIO(bytes_data))
+    bytes_data = storage.get_cloudobject(cloud_object, stream=True)
+    df = pd.read_csv(bytes_data)
     selected_column = df.iloc[:, column_index]
+    document_name = cloud_object.key
     return [(value, document_name) for value in selected_column]
 
 

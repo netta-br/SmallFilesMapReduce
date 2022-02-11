@@ -1,4 +1,5 @@
 from lithops import Storage
+from lithops.storage.utils import CloudObject
 from lithops.multiprocessing import Pool
 
 # database
@@ -9,6 +10,7 @@ import sqlite3
 # Implementation of MapReduce engine.
 # -------------------------------------
 
+STORAGE = 'localhost'
 PREFIX_SEPARATOR = "/"
 TIME_OUT_ERROR = 60  # maximal timeout in seconds
 DATABASE = 'mydata.db'
@@ -67,9 +69,11 @@ class MapReduceEngine:
         # --------
         storage = Storage()  # load configuration from file
         container, prefix = input_data.split(PREFIX_SEPARATOR)  # extract bucket name and prefix
-        input_files = storage.list_keys(container, prefix=prefix)
+        objects_attr = storage.list_objects(container, prefix=prefix)
 
-        args_list = [(x, params['column']) for x in input_files]
+        cobj_list = [CloudObject(STORAGE, container, x['Key']) for x in objects_attr]  # aggregate == False
+
+        args_list = [(x, params['column']) for x in cobj_list]
         with Pool() as pool:
             async_result = pool.starmap_async(map_function, args_list)
             try:
