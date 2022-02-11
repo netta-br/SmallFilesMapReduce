@@ -1,5 +1,6 @@
 from MapReduceEngine import *
 import pandas as pd
+import time
 
 
 def inverted_map(cloud_object, column_index):
@@ -18,11 +19,19 @@ def inverted_reduce(value, documents):
     return value, documents
 
 
+start = time.time()
+
+# Invoke MapReduce:
 input_data = 'my_bucket/Data'
-chunk_size = 2000  # bytes
+chunk_size = 20000  # bytes
 mapreduce = MapReduceEngine(chunk_size=chunk_size)
 results = mapreduce.execute(input_data, inverted_map, inverted_reduce, params={'column': 1, 'aggregate': True})
 print('Inverted index result:')
 if results is not None:
     for res in results:
         print(res, end='\n')
+
+end = time.time()
+
+print(f'Time elapsed: {end - start} seconds')
+

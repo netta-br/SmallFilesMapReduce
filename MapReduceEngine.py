@@ -127,7 +127,6 @@ class MapReduceEngine:
         args_list = [(x, params['column']) for x in cobj_list]
 
         with Pool() as pool:
-            # async_result = pool.starmap_async(map_function, args_list)
             async_result = pool.starmap_async(map_function, args_list)
             try:
                 map_result = async_result.get(timeout=TIME_OUT_ERROR)
