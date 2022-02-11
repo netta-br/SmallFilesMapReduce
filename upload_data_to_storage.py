@@ -1,6 +1,6 @@
 import os
 from lithops import Storage
-
+from lithops.storage.utils import CloudObject
 
 # ----------------------------------------------------------------------------
 # Upload files to object storage:
@@ -44,14 +44,24 @@ for obj_attr in storage.list_objects(bucket='my_bucket', prefix='Data'):
     key = obj_attr['Key']
     size = obj_attr['Size']
     print(f'key: {key}, Size: {size}')
+print('\n')
 
-# # Get object from storage:
-# print(f'{listing[0]}:')
-# data = storage.get_object(bucket='my_bucket', key=listing[0], stream=False)
-# print(f'\t type(data) = {type(data)}')
-# print(f'\t data = {data}')
-# print('\n')
-#
+# Get object from storage:
+print(f'{key}:')
+data = storage.get_object(bucket='my_bucket', key=key, stream=True)
+print(f'\t type(data) = {type(data)}')
+print(f'\t data = {data.read()}')
+print('\n')
+
+
+# Get object data from storage using cloudobject:
+cobj = CloudObject(backend='localhost', bucket='my_bucket', key=key)
+print(f'{key}:')
+data = storage.get_cloudobject(cobj, stream=True)
+print(f'\t type(data) = {type(data)}')
+print(f'\t data = {data.read()}')
+print('\n')
+
 # # Get metadata of object:
 # print('metadata:')
 # for obj_name in listing:
