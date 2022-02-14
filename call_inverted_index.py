@@ -22,7 +22,15 @@ def inverted_reduce(value, documents):
     return value, documents
 
 
+# aggregate: boolean, if set to True then aggregate small files.
+# input limit: limit number of input files to MapReduce. If set to None then there is no limit.
+# chunk_size: in bytes.
+
+# --------------------------------------------------------------------------
+# Sanity check: Running small task of inverted index and print the results.
+# --------------------------------------------------------------------------
 if RUN_SMALL_TASK_SANITY_CHECK:
+
     input_data = 'my_bucket/myCsvFiles'
     mapreduce = MapReduceEngine(chunk_size=500)
     results, map_info = mapreduce.execute(input_data, inverted_map, inverted_reduce,
@@ -37,12 +45,12 @@ if RUN_SMALL_TASK_SANITY_CHECK:
         for res in results:
             print(res, end='\n')
 
-# aggregate: boolean, if set to True then aggregate small files.
-# input limit: limit number of input files to MapReduce. If set to None then there is no limit.
-# chunk_size: in bytes.
 
+# --------------------------------------------------------------
+# Test 01: finding the optimal chunk size for current Platform.
+# --------------------------------------------------------------
 if RUN_TEST_CHUNK_SIZE:
-    # Test 01: finding the optimal chunk size for current Platform.
+
     param_sets = [{'aggregate': False, 'input_limit': None, 'chunk_size': None},
                   {'aggregate': True, 'input_limit': None, 'chunk_size': 1000},
                   {'aggregate': True, 'input_limit': None, 'chunk_size': 2000},
@@ -68,3 +76,35 @@ if RUN_TEST_CHUNK_SIZE:
     for result in test_result:
         print(result)
 
+# --------------------------------------------------------------------------------------------------
+# Test 02: Compute execution time with and without aggregation for different number of small files.
+# --------------------------------------------------------------------------------------------------
+if RUN_TEST_NUM_OF_FILES:
+
+    param_sets = [{'aggregate': False, 'input_limit': 20, 'chunk_size': None},
+                  {'aggregate': False, 'input_limit': 50, 'chunk_size': None},
+                  {'aggregate': False, 'input_limit': 100, 'chunk_size': None},
+                  {'aggregate': False, 'input_limit': 200, 'chunk_size': None},
+                  {'aggregate': False, 'input_limit': 500, 'chunk_size': None},
+                  {'aggregate': False, 'input_limit': 1000, 'chunk_size': None},
+                  {'aggregate': False, 'input_limit': 2000, 'chunk_size': None},
+                  {'aggregate': True, 'input_limit': 20, 'chunk_size': 50000},
+                  {'aggregate': True, 'input_limit': 50, 'chunk_size': 50000},
+                  {'aggregate': True, 'input_limit': 100, 'chunk_size': 50000},
+                  {'aggregate': True, 'input_limit': 200, 'chunk_size': 50000},
+                  {'aggregate': True, 'input_limit': 500, 'chunk_size': 50000},
+                  {'aggregate': True, 'input_limit': 1000, 'chunk_size': 50000},
+                  {'aggregate': True, 'input_limit': 2000, 'chunk_size': 50000},
+                  ]
+
+    # Invoke MapReduce:
+    test_result = []
+    input_data = 'my_bucket/myCsvFiles'
+    for param_set in param_sets:
+        mapreduce = MapReduceEngine(chunk_size=param_set['chunk_size'])
+        results, map_info = mapreduce.execute(input_data, inverted_map, inverted_reduce,
+                                              params={'column': 1, 'aggregate': param_set['aggregate'], 'input_limit': param_set['input_limit']})
+        test_result.append(map_info)
+
+    for result in test_result:
+        print(result)
