@@ -13,7 +13,7 @@ city = ['NewYork', 'Haifa', 'Munchen', 'London', 'PaloAlto', 'TelAviv', 'Kiel', 
 secondname = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis']
 
 # Generate random values:
-num_files = 5000
+num_files = 2000
 num_records = 10
 firstnames = random.choices(firstname, k=num_files*num_records)
 cities = random.choices(city, k=num_files*num_records)
