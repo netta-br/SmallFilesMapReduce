@@ -152,7 +152,9 @@ class MapReduceEngine:
         #   Timer: measure execution time of Map stage
         # -----------------------------------------------
         end = timer()
-        print(f'Execution time Map phase: {end - start:.3f} seconds')
+        exec_time = end - start
+        num_jobs = len(cobj_list)
+        map_info = {'exec_time': exec_time, 'num_jobs': num_jobs}
 
         # ---------------------
         #   Sort and Shuffle:
@@ -170,5 +172,5 @@ class MapReduceEngine:
             print('MapReduce Failed')
             return
 
-        return reduce_result
+        return reduce_result, map_info
 

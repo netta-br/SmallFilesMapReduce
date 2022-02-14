@@ -22,9 +22,14 @@ def inverted_reduce(value, documents):
 input_data = 'my_bucket/myCsvFiles'
 chunk_size = 20000  # bytes
 mapreduce = MapReduceEngine(chunk_size=chunk_size)
-results = mapreduce.execute(input_data, inverted_map, inverted_reduce, params={'column': 1, 'aggregate': True})
+results, map_info = mapreduce.execute(input_data, inverted_map, inverted_reduce,
+                                      params={'column': 1, 'aggregate': True})
 
 print('Inverted index: done.')
+
+print('Map info:')
+print(f'\t Number of jobs: {map_info["num_jobs"]}')
+print(f'\t Execution time: {map_info["exec_time"]:.3f} seconds')
 
 # print('Inverted index result:')
 # if results is not None:
