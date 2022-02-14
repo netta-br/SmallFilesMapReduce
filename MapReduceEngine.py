@@ -131,6 +131,8 @@ class MapReduceEngine:
         storage = Storage()  # load configuration from file
         container, prefix = input_data.split(PREFIX_SEPARATOR)  # extract bucket name and prefix
         objects_attr = storage.list_objects(container, prefix=prefix)
+        if params['input_limit'] is not None:
+            objects_attr = objects_attr[:params['input_limit']]
 
         if params['aggregate']:
             cobj_list = self.partition_data(container, objects_attr)

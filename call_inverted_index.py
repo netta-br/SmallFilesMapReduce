@@ -23,7 +23,7 @@ input_data = 'my_bucket/myCsvFiles'
 chunk_size = 20000  # bytes
 mapreduce = MapReduceEngine(chunk_size=chunk_size)
 results, map_info = mapreduce.execute(input_data, inverted_map, inverted_reduce,
-                                      params={'column': 1, 'aggregate': True})
+                                      params={'column': 1, 'aggregate': True, 'input_limit': 100})
 
 print('Inverted index: done.')
 
