@@ -46,7 +46,7 @@ storage = Storage()  # backend='localhost'
 # Upload all the files into the bucket:
 for index, filename in enumerate(filenames):
     filepath = filepaths[index]
-    prefix = 'Data'
+    prefix = 'myCsvFiles'
     object_name = os.path.join(prefix, filename)
     print(object_name)
     with open(filepath, 'rb') as fl:

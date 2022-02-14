@@ -1,9 +1,16 @@
+# General
+import os
+
+# lithops
 from lithops import Storage
 from lithops.storage.utils import CloudObject
 from lithops.multiprocessing import Pool
 
 # database
 import sqlite3
+
+# Timer
+from timeit import default_timer as timer
 
 
 # -------------------------------------
@@ -25,6 +32,9 @@ class MapReduceEngine:
 
     @staticmethod
     def create_database():
+        # Create SQLite database:
+        if os.path.exists(DATABASE):
+            os.remove(DATABASE)
         # Create SQlite database “temp_results.db”:
         sql_conn = sqlite3.connect(DATABASE)
         c = sql_conn.cursor()
@@ -47,8 +57,7 @@ class MapReduceEngine:
         return partitions
 
     def small_objects_partition(self, container, small_objects):
-        # TODO: Each mapper will receive at most two times the chunk size,
-        #  if the chunk size needs to be more strict then consider an efficient algorithm to partition the file array
+        # Each mapper will receive at most two times the chunk size
         partitions = []
         cur = []
         batch_size = 0
@@ -111,6 +120,11 @@ class MapReduceEngine:
 
     def execute(self, input_data, map_function, reduce_function, params):
 
+        # -----------------------------------------------
+        #   Timer: measure execution time of Map stage
+        # -----------------------------------------------
+        start = timer()
+
         # --------
         #   Map:
         # --------
@@ -133,6 +147,12 @@ class MapReduceEngine:
             except TimeoutError:
                 print('MapReduce Failed')
                 return
+
+        # -----------------------------------------------
+        #   Timer: measure execution time of Map stage
+        # -----------------------------------------------
+        end = timer()
+        print(f'Execution time Map phase: {end - start:.3f} seconds')
 
         # ---------------------
         #   Sort and Shuffle:
