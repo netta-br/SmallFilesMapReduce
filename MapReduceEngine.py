@@ -19,7 +19,7 @@ from timeit import default_timer as timer
 
 STORAGE = 'localhost'
 PREFIX_SEPARATOR = "/"
-TIME_OUT_ERROR = 60  # maximal timeout in seconds
+TIME_OUT_ERROR = 300  # maximal timeout in seconds
 DATABASE = 'mydata.db'
 TEMP_RESULTS_TABLE = "temp_results"
 
